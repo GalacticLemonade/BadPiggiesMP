@@ -30,11 +30,10 @@ namespace BadPiggiesMP {
 
                     //read packet
                     string gameId = socketStream.ReadString();
-                    byte packetId = socketStream.ReadByte();
+                    PacketTypes.ServerPackets packetId = (PacketTypes.ServerPackets)socketStream.ReadByte();
 
                     switch (packetId) {
-                        //request place part
-                        case (byte)PacketTypes.ServerPackets.REQ_PLACE_PART:
+                        case PacketTypes.ServerPackets.REQ_PLACE_PART:
                             //read part pos
                             int partX = socketStream.ReadVarInt();
                             int partY = socketStream.ReadVarInt();
@@ -44,49 +43,49 @@ namespace BadPiggiesMP {
                             Console.WriteLine($"Place part at {partX}, {partY}, with type {type}");
                             
                             //write data back to clients
-                            Games[gameId].GetBroadcastBPStream().WriteByte((byte)PacketTypes.ClientPackets.PLACE_PART);
+                            Games[gameId].GetBroadcastBPStream().WriteByte(PacketTypes.ClientPackets.PLACE_PART);
                             Games[gameId].GetBroadcastBPStream().WriteVarInt(partX); //x
                             Games[gameId].GetBroadcastBPStream().WriteVarInt(partY); //y
                             Games[gameId].GetBroadcastBPStream().WriteShort((short)type); //type
                             break;
                         //request game start
-                        case (byte)PacketTypes.ServerPackets.REQ_GAME_START:
+                        case PacketTypes.ServerPackets.REQ_GAME_START:
                             Console.WriteLine("Game start requested!");
 
                             //tell a random client to send their physics info so we can relay it
                             Random random = new Random();
                             int selectedClient = random.Next(0, Games[gameId].clients.Count);
-                            Games[gameId].clients[selectedClient].WriteByte((byte)PacketTypes.ClientPackets.SELECTED);
+                            Games[gameId].clients[selectedClient].WriteByte(PacketTypes.ClientPackets.SELECTED);
                             
                             Games[gameId].Start();
                             
                             //write data back to clients
-                            Games[gameId].GetBroadcastBPStream().WriteByte((byte)PacketTypes.ClientPackets.GAME_START);
+                            Games[gameId].GetBroadcastBPStream().WriteByte(PacketTypes.ClientPackets.GAME_START);
                             break;
                         //request switch level
-                        case (byte)PacketTypes.ServerPackets.REQ_LEVEL_SWITCH:
+                        case PacketTypes.ServerPackets.REQ_LEVEL_SWITCH:
                             // read levelid
                             int levelId = socketStream.ReadInt();
 
                             Console.WriteLine($"Load level {levelId}");
                             
                             //write data to client
-                            Games[gameId].GetBroadcastBPStream().WriteByte((byte)PacketTypes.ClientPackets.LEVEL_SWITCH);
+                            Games[gameId].GetBroadcastBPStream().WriteByte(PacketTypes.ClientPackets.LEVEL_SWITCH);
                             Games[gameId].GetBroadcastBPStream().WriteInt(levelId);
                             break;
                         //activate part
-                        case (byte)PacketTypes.ServerPackets.REQ_ACTIVATE_PART:
+                        case PacketTypes.ServerPackets.REQ_ACTIVATE_PART:
                             //read part network id
                             int partNetId = socketStream.ReadVarInt();
 
                             Console.WriteLine($"Client requested us to activate part with NID {partNetId}");
                             
                             //write data back to client
-                            Games[gameId].GetBroadcastBPStream().WriteByte((byte)PacketTypes.ClientPackets.ACTIVATE_PART);
+                            Games[gameId].GetBroadcastBPStream().WriteByte(PacketTypes.ClientPackets.ACTIVATE_PART);
                             Games[gameId].GetBroadcastBPStream().WriteInt(partNetId);
                             break;
                         //connect player to game
-                        case (byte)PacketTypes.ServerPackets.CONNECT:
+                        case PacketTypes.ServerPackets.CONNECT:
                             string username = socketStream.ReadString();
 
                             if (Games.TryGetValue(gameId, out Game game))
@@ -108,7 +107,7 @@ namespace BadPiggiesMP {
                             Console.WriteLine($"Connecting user with username of {username} and gameid of {gameId}");
                             break;
                         //client telling server physics info
-                        case (byte)PacketTypes.ServerPackets.PART_UPDATE:
+                        case PacketTypes.ServerPackets.PART_UPDATE:
 
                             int numParts = socketStream.ReadVarInt();
                             int netId = socketStream.ReadVarInt();
@@ -117,7 +116,7 @@ namespace BadPiggiesMP {
                             float rotW = socketStream.ReadFloat();
                             
                             //relay all that data back to every client i think or smth
-                            Games[gameId].GetBroadcastBPStream().WriteByte((byte)PacketTypes.ClientPackets.PART_UPDATE);
+                            Games[gameId].GetBroadcastBPStream().WriteByte(PacketTypes.ClientPackets.PART_UPDATE);
                             Games[gameId].GetBroadcastBPStream().WriteVarInt(numParts);
                             Games[gameId].GetBroadcastBPStream().WriteVarInt(netId);
                             Games[gameId].GetBroadcastBPStream().WriteVec2(position);
@@ -129,7 +128,7 @@ namespace BadPiggiesMP {
                             Console.WriteLine($"Unknown packet {packetId}!");
 
                             //send kick packet
-                            socketStream.WriteByte((byte)PacketTypes.ClientPackets.KICK);
+                            socketStream.WriteByte(PacketTypes.ClientPackets.KICK);
                             socketStream.WriteString("Invalid packet");
 
                             break;

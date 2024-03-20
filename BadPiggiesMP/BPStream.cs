@@ -28,8 +28,8 @@ namespace BadPiggiesMP {
             return (byte)byteVal;
         }
 
-        public void WriteByte(byte val) {
-            backingStream.WriteByte(val);
+        public void WriteByte(PacketTypes.ClientPackets val) {
+            backingStream.WriteByte((byte)val);
         }
 
         public void WriteByte(int val) {
