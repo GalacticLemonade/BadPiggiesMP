@@ -1,0 +1,113 @@
+funny swine game protocol
+V1.07
+
+domain bpmp.galacticlemon.dev
+port 39182
+
+data transmitted over tcp
+
+---- TYPES ----
+byte = 8 bit unsigned integer
+int16 = 16 bit signed integer (short)
+int32 = 32 bit signed integer (int)
+float32 = 32 bit floating point number (float)
+float64 = 64 bit floating point number (double)
+varint = variable-length encoded int32 (see https://wiki.vg/Protocol#VarInt_and_VarLong)
+vec2 = 2 float32s, first is x, second is y
+str = utf-8 encoded string prefixed by a varint for length in bytes
+
+--- PACKET FORMAT ---
+string game id (special identifier of the specific game)
+byte id (identifier of the packet)
+ARBITRARY DATA, FIGURE OUT WHAT DATA IT IS USING ID
+
+--- PACKETS ---
+0x00 (Place Part) (Server -> Client):
+//position in the grid for this part
+varint x
+varint y
+//part type, BasePart.PartType enum value casted to short, a value of -1 means the part was removed
+int16 type
+//"network identifier" of the part, clients use the host's id, host gets id by calling GetInstanceId() on the part gameobject, this id is used to sync part movement later on
+varint netId
+
+0x01 (Request place part) (Client -> Server):
+//position in the grid for this part
+varint x
+varint y
+//part type, BasePart.PartType enum value casted to short, a value of -1 means the part was removed
+int16 type
+
+//note: the client does not actually place the on its side after/before sending this, rather it waits for a 0x00 from the server
+
+//sent from the server to signify to the client the game has begun (i.e. out of building mode and into running mode)
+0x02 (Game start) (Server -> Client):
+//no data in this packet
+
+//sent by a client to request for the server to send an 0x02
+//like usual, the client never starts a game on its side without the server's blessing/packet
+0x03 (Request game start) (Client -> Server):
+//no data in this packet
+
+//update to a part's position, should only be sent in RUNNING mode, this is for physics!
+//when a player moves a part, you just send 2 0x00s, one to remove at old pos and one to add at new, this packet is ONLY for when the game has
+//already started!
+//this packet's data is encoded as lz4
+0x04 (Part update) (Server -> Client):
+//all data is compressed with lz4
+//length of the following array
+varint numParts
+//the following data is repeated for every part (read numParts times)
+//network id of the part we're updating
+varint netId
+//new position of the part
+vec2 pos
+//new rotation of the part (badpiggies is 2d, so we only rotate around the z, so i can get away with two floats!)
+float32 rotZ
+float32 rotW
+
+//this packet is sent when the current level is won, i.e. the pig hits the flag
+0x05 (Win) (Server -> Client):
+//no data in this packet
+
+//sent when the game is switched to another level
+0x06 (switch level) (Server -> Client):
+int32 levelId
+
+0x07 (request switch level) (Client -> Server):
+int32 levelId
+
+0x08 (activate part) (Server -> Client):
+int32 partNetId //network id of the part to activate
+
+0x09 (request activate part) (Client -> Server):
+int32 partNetId //network id of the part to activate
+
+//sent from the server to the client when the server lets the client know it's disconnecting it
+0x0A (Kick) (Server -> Client):
+str message
+
+//sent from client to server to indicate what game it’s in
+0x0B (connect) (Client -> Server):
+str username
+
+//sent from server to client to tell it to send physics info
+0X0C (selected) (Server -> Client)
+//no data in this packet
+
+//update to a part's position, should only be sent in RUNNING mode, this is for physics!
+//when a player moves a part, you just send 2 0x00s, one to remove at old pos and one to add at new, this packet is ONLY for when the game has
+//already started!
+//this packet's data is encoded as lz4
+0x0D (Part update) (Client -> Server):
+//all data is compressed with lz4
+//length of the following array
+varint numParts
+//the following data is repeated for every part (read numParts times)
+//network id of the part we're updating
+varint netId
+//new position of the part
+vec2 pos
+//new rotation of the part (badpiggies is 2d, so we only rotate around the z, so i can get away with two floats!)
+float32 rotZ
+float32 rotW

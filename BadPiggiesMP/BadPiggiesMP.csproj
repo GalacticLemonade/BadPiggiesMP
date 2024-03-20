@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="BPTcpClient.cs" />
+    <Compile Remove="PartType.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="BadPiggiesServer" />
+    <None Remove="BPTcpClient" />
+    <None Remove="NewFile1.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="K4os.Compression.LZ4" Version="1.3.7-beta" />
+    <PackageReference Include="K4os.Compression.LZ4.Streams" Version="1.3.7-beta" />
+    <PackageReference Include="MagicPhysX" Version="1.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Sample\SampleWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
+  </ItemGroup>
+</Project>
