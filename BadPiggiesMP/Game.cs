@@ -66,14 +66,14 @@ namespace BadPiggiesMP
             this.clientGameStream = new GameStream(this.clients);
             this.clientsStream = new BPStream(this.clientGameStream);
             this.gameId = id;
-            //this.World = new BPWorld(this);
+            //this.World = new BPWorld(this); - no longer going to use serverside physics
         }
 
         private void Run()
         {
             while (true)
             {
-                //this.World.Simulate();
+                //this.World.Simulate(); - no longer going to use serverside physics
                 //Thread.Sleep(16);
             }
         }
@@ -87,7 +87,7 @@ namespace BadPiggiesMP
         {
             clients.Add(player);
             //init player in world
-            //World.AddClient(player);
+            //World.AddClient(player); - how many times do i have to say this? no longer going to use serverside physics
         }
 
         public void RemovePlayer(BPStream player)

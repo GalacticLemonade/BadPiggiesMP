@@ -1,10 +1,11 @@
 funny swine game protocol
 V1.07
 
-domain bpmp.galacticlemon.dev
+domain bpmp.galacticlemon.dev (when i stop being too lazy to fix it)
 port 39182
 
-data transmitted over tcp
+note: lzw compression is not yet implemented
+note: data transmitted over tcp
 
 ---- TYPES ----
 byte = 8 bit unsigned integer
