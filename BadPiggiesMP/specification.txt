@@ -125,6 +125,12 @@ string playerName
 
 //sent from server to game instance owner (client) to ask if a user can join the current instance.
 0X10 (Player join) (Server -> Client):
+//username of player trying to join
 string playerName
 
-//sent from the 
+//sent game instance owner (client) to server to confirm or deny access to a user joining
+0X11 (Player join) (Client -> Server):
+//username of player trying to join
+string playerName
+//confirm or deny the player trying to join
+bool allowed
