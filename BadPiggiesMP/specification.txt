@@ -1,5 +1,5 @@
 funny swine game protocol
-V1.07
+V1.08
 
 domain bpmp.galacticlemon.dev (when i stop being too lazy to fix it)
 port 39182
@@ -8,9 +8,9 @@ note: lzw compression is not yet implemented
 note: data transmitted over tcp
 
 ---- TYPES ----
-byte = 8 bit unsigned integer
-int16 = 16 bit signed integer (short)
-int32 = 32 bit signed integer (int)
+byte = 8-bit unsigned integer
+int16 = 16-bit signed integer (short)
+int32 = 32-bit signed integer (int)
 float32 = 32 bit floating point number (float)
 float64 = 64 bit floating point number (double)
 varint = variable-length encoded int32 (see https://wiki.vg/Protocol#VarInt_and_VarLong)
@@ -109,6 +109,22 @@ varint numParts
 varint netId
 //new position of the part
 vec2 pos
-//new rotation of the part (badpiggies is 2d, so we only rotate around the z, so i can get away with two floats!)
+//new rotation of the part (bad piggies is 2d, so we only rotate around the z, so i can get away with two floats!)
 float32 rotZ
 float32 rotW
+
+//appended 9/20/24:
+//sent from server to client to tell it that it is the game instance owner.
+0X0E (Is owner) (Server -> Client):
+//no extra data
+
+//sent from client to server to ask for permission to join the specified game instance.
+0X0F (Player join) (Client -> Server):
+//username of player trying to join
+string playerName
+
+//sent from server to game instance owner (client) to ask if a user can join the current instance.
+0X10 (Player join) (Server -> Client):
+string playerName
+
+//sent from the 
